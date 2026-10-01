@@ -1,0 +1,2364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Contracts Copilot coordinates telco contract intake, obligation tracking, risk analysis, commercial scenarios, and human-approved action."
+    />
+    <meta name="theme-color" content="#06111f" />
+    <title>Contracts Copilot | Telco Legal AI</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        --page: #06111f;
+        --sidebar: #081827;
+        --panel: rgba(255, 255, 255, 0.055);
+        --panel-soft: rgba(255, 255, 255, 0.035);
+        --border: rgba(255, 255, 255, 0.1);
+        --text: #f8fafc;
+        --muted: #94a3b8;
+        --cyan: #67e8f9;
+        --cyan-strong: #22d3ee;
+        --green: #6ee7b7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        clip-path: inset(50%);
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(ellipse at 78% -12%, rgba(14, 116, 144, 0.12), transparent 34rem),
+          var(--page);
+        font-size: 14px;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button {
+        color: inherit;
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 2px solid var(--cyan-strong);
+        outline-offset: 3px;
+      }
+
+      .app-shell {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        display: flex;
+        flex: 0 0 288px;
+        flex-direction: column;
+        width: 288px;
+        height: 100vh;
+        min-height: 660px;
+        padding: 22px 20px 20px;
+        background: rgba(8, 24, 39, 0.96);
+        border-right: 1px solid var(--border);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 30px;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 48px;
+        height: 48px;
+        flex: 0 0 48px;
+        place-items: center;
+        color: var(--cyan);
+        background: rgba(6, 182, 212, 0.13);
+        border: 1px solid rgba(34, 211, 238, 0.2);
+        border-radius: 16px;
+      }
+
+      .brand-name {
+        font-size: 17px;
+        font-weight: 750;
+        letter-spacing: -0.035em;
+      }
+
+      .brand-subtitle {
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .navigation {
+        display: grid;
+        gap: 7px;
+      }
+
+      .nav-button {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        min-height: 43px;
+        padding: 0 13px;
+        color: #cbd5e1;
+        text-align: left;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 15px;
+        cursor: pointer;
+        transition:
+          background 150ms ease,
+          color 150ms ease,
+          border-color 150ms ease;
+      }
+
+      .nav-button:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .nav-button[aria-current="page"] {
+        color: #08212b;
+        font-weight: 700;
+        background: var(--cyan-strong);
+        box-shadow: 0 8px 24px rgba(34, 211, 238, 0.13);
+      }
+
+      .nav-button[aria-current="page"] .nav-icon {
+        color: #0e5261;
+      }
+
+      .nav-icon {
+        display: inline-flex;
+        color: #94a3b8;
+      }
+
+      .sidebar-status {
+        margin-top: auto;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--border);
+        border-radius: 17px;
+      }
+
+      .status-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #fcd34d;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        background: #fbbf24;
+        border-radius: 50%;
+        box-shadow: 0 0 12px rgba(251, 191, 36, 0.45);
+      }
+
+      .sidebar-status p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.6;
+      }
+
+      main {
+        flex: 1;
+        min-width: 0;
+        padding: 30px 32px 40px;
+      }
+
+      .mobile-navigation {
+        display: none;
+        margin-bottom: 22px;
+      }
+
+      .mobile-navigation select {
+        width: 100%;
+        min-height: 48px;
+        padding: 0 14px;
+        color: var(--text);
+        background: #0b1f33;
+        border: 1px solid var(--border);
+        border-radius: 15px;
+      }
+
+      .page-header {
+        margin-bottom: 27px;
+      }
+
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-bottom: 17px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 27px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 650;
+        border: 1px solid transparent;
+        border-radius: 999px;
+      }
+
+      .badge-agent {
+        color: #67e8f9;
+        background: rgba(6, 182, 212, 0.09);
+        border-color: rgba(34, 211, 238, 0.2);
+      }
+
+      .badge-review {
+        color: #6ee7b7;
+        background: rgba(16, 185, 129, 0.09);
+        border-color: rgba(52, 211, 153, 0.17);
+      }
+
+      .badge-demo {
+        color: #fcd34d;
+        background: rgba(245, 158, 11, 0.09);
+        border-color: rgba(251, 191, 36, 0.16);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(34px, 4vw, 49px);
+        line-height: 1.08;
+        letter-spacing: -0.052em;
+      }
+
+      .page-subtitle {
+        max-width: 960px;
+        margin: 13px 0 0;
+        color: #cbd5e1;
+        font-size: 16px;
+        line-height: 1.65;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .panel,
+      .metric-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 23px;
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      }
+
+      .metric-card {
+        min-height: 100px;
+        padding: 18px 20px;
+        transition:
+          transform 170ms ease,
+          border-color 170ms ease;
+      }
+
+      .metric-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(103, 232, 249, 0.24);
+      }
+
+      .metric-value {
+        font-size: 30px;
+        font-weight: 750;
+        letter-spacing: -0.045em;
+      }
+
+      .metric-label {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(270px, 1fr);
+        gap: 18px;
+      }
+
+      .panel {
+        padding: 22px;
+      }
+
+      .panel h2,
+      .panel h3 {
+        margin: 0;
+        letter-spacing: -0.025em;
+      }
+
+      .panel h2 {
+        font-size: 21px;
+      }
+
+      .panel h3 {
+        font-size: 17px;
+      }
+
+      .panel-copy {
+        margin: 11px 0 0;
+        color: #cbd5e1;
+        line-height: 1.7;
+      }
+
+      .risk-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .risk-summary {
+        min-height: 132px;
+        padding: 14px;
+        background: var(--panel-soft);
+        border: 1px solid var(--border);
+        border-radius: 17px;
+      }
+
+      .risk-summary .severity-label {
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .risk-summary strong {
+        display: block;
+        margin-top: 9px;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .risk-summary .exposure {
+        display: block;
+        margin-top: 14px;
+        color: var(--green);
+        font-size: 23px;
+        font-weight: 750;
+        letter-spacing: -0.04em;
+      }
+
+      .recommendations {
+        display: grid;
+        gap: 9px;
+        margin: 17px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .recommendations li {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        padding: 10px 11px;
+        color: #e2e8f0;
+        font-size: 12px;
+        line-height: 1.45;
+        background: var(--panel-soft);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+      }
+
+      .recommendations svg {
+        flex: 0 0 17px;
+        margin-top: 1px;
+        color: var(--green);
+      }
+
+      .primary-button,
+      .secondary-button,
+      .small-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 43px;
+        padding: 0 17px;
+        font-weight: 700;
+        border: 1px solid transparent;
+        border-radius: 14px;
+        cursor: pointer;
+        transition:
+          transform 150ms ease,
+          background 150ms ease,
+          border-color 150ms ease;
+      }
+
+      .primary-button {
+        color: #06222b;
+        background: var(--cyan-strong);
+      }
+
+      .primary-button:hover {
+        background: #67e8f9;
+        transform: translateY(-1px);
+      }
+
+      .primary-button:disabled {
+        color: #09231d;
+        background: var(--green);
+        cursor: default;
+        transform: none;
+      }
+
+      .secondary-button {
+        color: #e2e8f0;
+        background: rgba(255, 255, 255, 0.055);
+        border-color: var(--border);
+      }
+
+      .secondary-button:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+
+      .small-button {
+        min-height: 34px;
+        padding: 0 12px;
+        color: var(--cyan);
+        font-size: 12px;
+        background: rgba(6, 182, 212, 0.1);
+        border-color: rgba(34, 211, 238, 0.12);
+      }
+
+      .small-button:hover {
+        background: rgba(6, 182, 212, 0.18);
+      }
+
+      .full-width {
+        width: 100%;
+        margin-top: 16px;
+      }
+
+      .section-stack {
+        display: grid;
+        gap: 17px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      .risk-table {
+        width: 100%;
+        min-width: 810px;
+        border-collapse: collapse;
+        text-align: left;
+      }
+
+      .risk-table th {
+        padding: 14px 10px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 600;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .risk-table td {
+        padding: 16px 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+      }
+
+      .risk-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .risk-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.025);
+      }
+
+      .severity {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 9px;
+        font-size: 10px;
+        font-weight: 650;
+        border-radius: 999px;
+      }
+
+      .severity-critical {
+        color: #fda4af;
+        background: rgba(244, 63, 94, 0.14);
+      }
+
+      .severity-high {
+        color: #fcd34d;
+        background: rgba(245, 158, 11, 0.13);
+      }
+
+      .severity-medium {
+        color: #93c5fd;
+        background: rgba(59, 130, 246, 0.13);
+      }
+
+      .exposure-text {
+        color: var(--green);
+        font-weight: 750;
+        white-space: nowrap;
+      }
+
+      .table-action {
+        color: #cbd5e1;
+        font-size: 12px;
+      }
+
+      .evidence-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+        gap: 17px;
+      }
+
+      .evidence-list {
+        display: grid;
+        gap: 17px;
+        margin: 19px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .evidence-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+      }
+
+      .evidence-number,
+      .plan-number,
+      .layer-number {
+        display: grid;
+        flex: 0 0 38px;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        color: var(--cyan);
+        font-weight: 750;
+        background: rgba(6, 182, 212, 0.11);
+        border: 1px solid rgba(34, 211, 238, 0.16);
+        border-radius: 13px;
+      }
+
+      .evidence-list strong {
+        display: block;
+        margin: 0 0 3px;
+        font-size: 14px;
+      }
+
+      .evidence-list span:last-child {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .confidence-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .confidence-item {
+        padding: 13px;
+        background: var(--panel-soft);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+      }
+
+      .confidence-heading {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 9px;
+        font-size: 11px;
+      }
+
+      .confidence-heading span:first-child {
+        color: #cbd5e1;
+      }
+
+      .confidence-heading strong {
+        color: var(--cyan);
+      }
+
+      .progress-track {
+        height: 5px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 5px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #0891b2, #67e8f9);
+        border-radius: inherit;
+      }
+
+      .plan-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+      }
+
+      .plan-card {
+        display: flex;
+        gap: 13px;
+        min-height: 118px;
+      }
+
+      .plan-number {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.13);
+        border-color: rgba(167, 139, 250, 0.17);
+      }
+
+      .plan-card h3 {
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .plan-card p {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.55;
+      }
+
+      .approval-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .approval-panel p {
+        margin: 7px 0 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .activated-state {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: var(--green);
+      }
+
+      .activated-state h2 {
+        color: var(--green);
+      }
+
+      .activated-state p {
+        color: #cbd5e1;
+      }
+
+      .impact-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 17px;
+      }
+
+      .chart-area {
+        position: relative;
+        display: flex;
+        height: 300px;
+        gap: 12px;
+        margin-top: 15px;
+        padding: 13px 10px 0 0;
+      }
+
+      .chart-y-axis {
+        display: flex;
+        flex: 0 0 32px;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 0 0 34px;
+        color: #64748b;
+        font-size: 10px;
+        text-align: right;
+      }
+
+      .bar-chart {
+        position: relative;
+        display: flex;
+        flex: 1;
+        align-items: stretch;
+        justify-content: space-around;
+        gap: 12px;
+        padding: 0 7px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+        background: repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent calc(25% - 1px),
+          rgba(255, 255, 255, 0.07) calc(25% - 1px),
+          rgba(255, 255, 255, 0.07) 25%
+        );
+      }
+
+      .bar-group {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        min-width: 0;
+      }
+
+      .bar-value {
+        margin-bottom: 6px;
+        color: #cbd5e1;
+        font-size: 10px;
+      }
+
+      .bar {
+        width: min(52px, 76%);
+        min-height: 7px;
+        background: linear-gradient(180deg, #38bdf8, #0e7490);
+        border: 1px solid rgba(103, 232, 249, 0.2);
+        border-bottom: 0;
+        border-radius: 9px 9px 0 0;
+      }
+
+      .bar-label {
+        min-height: 31px;
+        padding-top: 8px;
+        color: #94a3b8;
+        font-size: 10px;
+        text-align: center;
+      }
+
+      .donut-layout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 26px;
+        min-height: 300px;
+      }
+
+      .donut {
+        display: grid;
+        width: 190px;
+        height: 190px;
+        flex: 0 0 190px;
+        place-items: center;
+        border-radius: 50%;
+        background: conic-gradient(
+          #38bdf8 0% 34%,
+          #a78bfa 34% 63%,
+          #34d399 63% 81%,
+          #fbbf24 81% 93%,
+          #fb7185 93% 100%
+        );
+      }
+
+      .donut-hole {
+        display: grid;
+        width: 116px;
+        height: 116px;
+        align-content: center;
+        justify-items: center;
+        background: #0b1b2b;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+      }
+
+      .donut-hole strong {
+        font-size: 25px;
+        letter-spacing: -0.04em;
+      }
+
+      .donut-hole span {
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .legend {
+        display: grid;
+        gap: 13px;
+        padding: 0;
+        list-style: none;
+      }
+
+      .legend li {
+        display: grid;
+        grid-template-columns: 9px minmax(100px, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+        color: #cbd5e1;
+        font-size: 11px;
+      }
+
+      .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      .legend strong {
+        color: white;
+        font-size: 11px;
+      }
+
+      .architecture-flow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 17px;
+      }
+
+      .flow-step {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 12px;
+        color: #e2e8f0;
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid var(--border);
+        border-radius: 13px;
+      }
+
+      .flow-arrow {
+        color: #64748b;
+      }
+
+      .architecture-layer {
+        padding: 20px;
+      }
+
+      .layer-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .layer-number {
+        color: #67e8f9;
+      }
+
+      .layer-number.violet {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.13);
+        border-color: rgba(167, 139, 250, 0.17);
+      }
+
+      .layer-number.emerald {
+        color: #6ee7b7;
+        background: rgba(16, 185, 129, 0.12);
+        border-color: rgba(52, 211, 153, 0.16);
+      }
+
+      .layer-number.amber {
+        color: #fcd34d;
+        background: rgba(245, 158, 11, 0.12);
+        border-color: rgba(251, 191, 36, 0.16);
+      }
+
+      .layer-number.rose {
+        color: #fda4af;
+        background: rgba(244, 63, 94, 0.12);
+        border-color: rgba(251, 113, 133, 0.16);
+      }
+
+      .layer-header p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .service-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 11px;
+      }
+
+      .service-card {
+        min-height: 91px;
+        padding: 13px;
+        background: var(--panel-soft);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+      }
+
+      .service-card strong {
+        display: block;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      .service-card p {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .gradient-panel {
+        background:
+          linear-gradient(125deg, rgba(8, 145, 178, 0.12), rgba(139, 92, 246, 0.08)),
+          var(--panel);
+      }
+
+      .walkthrough-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+      }
+
+      .walkthrough-card {
+        min-height: 125px;
+      }
+
+      .step-label {
+        margin-bottom: 9px;
+        color: var(--cyan);
+        font-size: 11px;
+        font-weight: 650;
+      }
+
+      .walkthrough-card p {
+        margin: 0;
+        color: #e2e8f0;
+        font-size: 15px;
+        line-height: 1.65;
+      }
+
+      .walkthrough-architecture {
+        margin-top: 27px;
+      }
+
+      .walkthrough-architecture > p {
+        margin: 7px 0 16px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .walkthrough-layer {
+        display: flex;
+        gap: 13px;
+      }
+
+      .walkthrough-layer h3 {
+        font-size: 14px;
+      }
+
+      .walkthrough-layer p {
+        margin: 7px 0 0;
+        color: #cbd5e1;
+        line-height: 1.65;
+      }
+
+      .agent-team-intro {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .agent-team-intro p {
+        max-width: 820px;
+        margin: 9px 0 0;
+        color: #cbd5e1;
+        line-height: 1.7;
+      }
+
+      .demo-label {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 11px;
+        color: #fcd34d;
+        font-size: 10px;
+        font-weight: 650;
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(251, 191, 36, 0.16);
+        border-radius: 999px;
+      }
+
+      .agent-flow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 20px;
+      }
+
+      .agent-flow-step {
+        padding: 10px 13px;
+        color: #e2e8f0;
+        font-size: 11px;
+        font-weight: 650;
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid var(--border);
+        border-radius: 13px;
+      }
+
+      .agent-flow-step.orchestrator {
+        color: var(--cyan);
+        background: rgba(6, 182, 212, 0.1);
+        border-color: rgba(34, 211, 238, 0.17);
+      }
+
+      .agent-team-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+      }
+
+      .agent-card {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .agent-card.orchestrator {
+        grid-column: 1 / -1;
+        background:
+          linear-gradient(120deg, rgba(8, 145, 178, 0.12), rgba(139, 92, 246, 0.06)),
+          var(--panel);
+      }
+
+      .agent-card-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+      }
+
+      .agent-card-header h2,
+      .agent-card-header h3 {
+        font-size: 15px;
+        line-height: 1.4;
+      }
+
+      .agent-role {
+        display: inline-flex;
+        margin-top: 5px;
+        color: var(--cyan);
+        font-size: 10px;
+        font-weight: 650;
+      }
+
+      .agent-card-copy {
+        margin: 0;
+        color: #cbd5e1;
+        font-size: 12px;
+        line-height: 1.65;
+      }
+
+      .agent-details {
+        display: grid;
+        gap: 10px;
+        margin: auto 0 0;
+      }
+
+      .agent-details div {
+        padding: 11px 12px;
+        background: var(--panel-soft);
+        border: 1px solid rgba(255, 255, 255, 0.075);
+        border-radius: 14px;
+      }
+
+      .agent-details dt {
+        margin-bottom: 4px;
+        color: var(--muted);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+
+      .agent-details dd {
+        margin: 0;
+        color: #e2e8f0;
+        font-size: 11px;
+        line-height: 1.55;
+      }
+
+      .human-review-panel {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        background:
+          linear-gradient(120deg, rgba(16, 185, 129, 0.1), transparent 75%),
+          var(--panel);
+      }
+
+      .human-review-panel h2 {
+        font-size: 16px;
+      }
+
+      .human-review-panel p {
+        margin: 7px 0 0;
+        color: #cbd5e1;
+        line-height: 1.65;
+      }
+
+      .service-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 11px;
+      }
+
+      .service-tag {
+        padding: 5px 9px;
+        color: #cbd5e1;
+        font-size: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+      }
+
+      .console-input-row {
+        display: flex;
+        gap: 10px;
+      }
+
+      .console-input {
+        flex: 1;
+        min-width: 0;
+        min-height: 49px;
+        padding: 0 15px;
+        color: var(--text);
+        background: #071827;
+        border: 1px solid var(--border);
+        border-radius: 15px;
+      }
+
+      .console-input::placeholder {
+        color: #64748b;
+      }
+
+      .agent-response {
+        min-height: 135px;
+        margin-top: 17px;
+        padding: 20px;
+        background: #071827;
+        border: 1px solid var(--border);
+        border-radius: 19px;
+      }
+
+      .response-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 12px;
+        color: var(--cyan);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+
+      .agent-response p {
+        margin: 0;
+        color: #e2e8f0;
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      .prompt-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 11px;
+        margin-top: 16px;
+      }
+
+      .prompt-button {
+        min-height: 75px;
+        padding: 13px;
+        color: #e2e8f0;
+        text-align: left;
+        background: var(--panel-soft);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        cursor: pointer;
+      }
+
+      .prompt-button:hover {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(103, 232, 249, 0.2);
+      }
+
+      .why-stack p {
+        max-width: 900px;
+        font-size: 16px;
+      }
+
+      .toast {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: min(420px, calc(100vw - 36px));
+        padding: 13px 16px;
+        color: #d1fae5;
+        background: #0d2929;
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        border-radius: 14px;
+        box-shadow: 0 15px 42px rgba(0, 0, 0, 0.35);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(8px);
+        transition:
+          opacity 160ms ease,
+          transform 160ms ease;
+      }
+
+      .toast.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (max-width: 1100px) {
+        .sidebar {
+          flex-basis: 245px;
+          width: 245px;
+          padding-inline: 15px;
+        }
+
+        main {
+          padding-inline: 23px;
+        }
+
+        .dashboard-grid,
+        .evidence-layout {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .service-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .donut-layout {
+          gap: 16px;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .sidebar {
+          display: none;
+        }
+
+        main {
+          padding: 18px 17px 32px;
+        }
+
+        .mobile-navigation {
+          display: block;
+        }
+
+        .page-header {
+          margin-bottom: 21px;
+        }
+
+        .badges {
+          margin-bottom: 13px;
+        }
+
+        h1 {
+          font-size: clamp(32px, 9vw, 43px);
+        }
+
+        .page-subtitle {
+          font-size: 14px;
+        }
+
+        .metric-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+        }
+
+        .metric-card {
+          min-height: 91px;
+          padding: 15px;
+          border-radius: 19px;
+        }
+
+        .metric-value {
+          font-size: 26px;
+        }
+
+        .metric-label {
+          font-size: 11px;
+          line-height: 1.45;
+        }
+
+        .risk-summary-grid,
+        .impact-grid,
+        .walkthrough-grid,
+        .plan-grid,
+        .agent-team-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .agent-card.orchestrator {
+          grid-column: auto;
+        }
+
+        .agent-team-intro {
+          flex-direction: column;
+          gap: 13px;
+        }
+
+        .agent-flow {
+          justify-content: flex-start;
+          padding: 15px;
+        }
+
+        .risk-summary {
+          min-height: 110px;
+        }
+
+        .panel {
+          padding: 18px;
+          border-radius: 20px;
+        }
+
+        .donut-layout {
+          flex-wrap: wrap;
+        }
+
+        .legend {
+          width: 100%;
+          max-width: 280px;
+        }
+
+        .architecture-flow {
+          gap: 6px;
+        }
+
+        .flow-step {
+          font-size: 10px;
+        }
+
+        .service-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .approval-panel {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .approval-panel .primary-button {
+          width: 100%;
+        }
+
+        .prompt-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .console-input-row {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .console-input-row .primary-button {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 390px) {
+        .metric-value {
+          font-size: 23px;
+        }
+
+        .service-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 12h-5M15 8h-5M19 17V5a2 2 0 0 0-2-2H4" />
+              <path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3" />
+            </svg>
+          </div>
+          <div>
+            <div class="brand-name">Contracts Copilot</div>
+            <div class="brand-subtitle">Telco contract intelligence</div>
+          </div>
+        </div>
+        <nav class="navigation" id="desktop-navigation"></nav>
+        <div class="sidebar-status">
+          <div class="status-title"><span class="status-dot"></span>Demo mode · sample data</div>
+          <p>Illustrative agent workflows only. No live contract systems are connected.</p>
+        </div>
+      </aside>
+
+      <main>
+        <div class="mobile-navigation">
+          <label for="mobile-page" class="visually-hidden">Choose a section</label>
+          <select id="mobile-page" aria-label="Choose a section"></select>
+        </div>
+        <div id="page-content" aria-live="polite"></div>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      const sections = [
+        "Dashboard",
+        "Risk Radar",
+        "Investigation",
+        "Agent Team",
+        "Action Plan",
+        "Impact View",
+        "Architecture",
+        "Command Console",
+        "Executive Walkthrough",
+      ];
+
+      const risks = [
+        {
+          title: "Cloud spend commitment gap",
+          exposure: "$27M",
+          confidence: "94%",
+          severity: "Critical",
+          action: "Renegotiate or reallocate spend",
+        },
+        {
+          title: "Tower lease renewal window",
+          exposure: "$18M",
+          confidence: "91%",
+          severity: "High",
+          action: "Start renewal package",
+        },
+        {
+          title: "Fiber construction SLA breach",
+          exposure: "$9.4M",
+          confidence: "88%",
+          severity: "High",
+          action: "Trigger vendor remediation",
+        },
+        {
+          title: "Software license overcommit",
+          exposure: "$4.8M",
+          confidence: "93%",
+          severity: "Medium",
+          action: "Reduce renewal scope",
+        },
+        {
+          title: "Data processing addendum missing",
+          exposure: "$2.1M",
+          confidence: "85%",
+          severity: "Medium",
+          action: "Route to privacy counsel",
+        },
+      ];
+
+      const recommendations = [
+        "Generate cloud commitment obligation summary",
+        "Prepare supplier negotiation brief",
+        "Create renewal calendar for tower leases",
+        "Route privacy addendum gap to counsel",
+        "Model renegotiation scenarios with finance",
+      ];
+
+      const actionItems = [
+        "Generate obligation summary for legal and procurement",
+        "Prepare supplier negotiation brief",
+        "Model renegotiation scenarios with finance",
+        "Identify workloads eligible for spend reallocation",
+        "Create renewal calendar and escalation workflow",
+        "Draft business owner briefing note",
+      ];
+
+      const specialistAgents = [
+        {
+          name: "Contract Intake & Clause Extraction Agent",
+          role: "Reads agreements and builds the evidence base",
+          purpose:
+            "Classifies agreements and extracts parties, key dates, notice periods, spend terms, SLAs, and privacy clauses.",
+          inputs: "Contracts, amendments, side letters, and document metadata.",
+          outputs: "Normalized clause and date records linked to their source passages; unreadable or ambiguous terms are flagged.",
+          limits:
+            "Does not invent missing terms or make legal conclusions without cited contract evidence.",
+        },
+        {
+          name: "Obligation & Renewal Agent",
+          role: "Tracks what is due and when",
+          purpose:
+            "Turns validated terms into a timeline of deliverables, renewal windows, notice deadlines, and accountable owners.",
+          inputs: "Verified extracted terms, renewal dates, and owner records.",
+          outputs: "Obligation register, upcoming-deadline alerts, and renewal calendar candidates.",
+          limits:
+            "Can recommend reminders, but cannot amend terms or send contractual notice.",
+        },
+        {
+          name: "Risk & Exposure Analyst Agent",
+          role: "Connects contract terms to business exposure",
+          purpose:
+            "Prioritizes legal and commercial risks by financial impact, timing, severity, and strength of supporting evidence.",
+          inputs: "Cited contract terms, supplier spend, usage forecasts, and SLA performance.",
+          outputs: "Ranked risk findings with exposure estimates, confidence, evidence, and recommended next steps.",
+          limits:
+            "Separates verified facts from assumptions; flags uncertainty and does not replace legal advice.",
+        },
+        {
+          name: "Negotiation & Scenario Agent",
+          role: "Models options for procurement and finance",
+          purpose:
+            "Explores supplier alternatives, workload reallocation, renewal positions, and potential commercial outcomes.",
+          inputs: "Reviewed exposure findings, renewal timing, spend, and scenario assumptions.",
+          outputs: "Illustrative negotiation options, scenario ranges, and the assumptions behind each estimate.",
+          limits:
+            "Scenarios are estimates, not commitments; finance, procurement, and counsel validate before use.",
+        },
+        {
+          name: "Action & Workflow Agent",
+          role: "Prepares review-ready work for accountable owners",
+          purpose:
+            "Packages findings into draft tasks, evidence briefs, escalations, and approval-ready action plans.",
+          inputs: "Prioritized findings, proposed actions, owner directory, and human review decisions.",
+          outputs: "Draft owner assignments, review packets, and workflow tasks awaiting authorization.",
+          limits:
+            "Drafts only until approval; cannot contact suppliers, approve legal positions, or commit spend.",
+        },
+      ];
+
+      const architectureLayers = [
+        {
+          name: "Source Systems",
+          note: "Contract repositories and enterprise systems of record",
+          tone: "cyan",
+          services: [
+            ["SharePoint & OneDrive", "Executed contracts, amendments, side letters"],
+            ["Dynamics 365 / SAP", "Supplier master, spend, purchase orders"],
+            ["ServiceNow", "SLA incidents and vendor remediation tickets"],
+            ["Azure Blob Storage", "Landing zone for scanned and legacy documents"],
+          ],
+        },
+        {
+          name: "Ingest & Data Platform",
+          note: "Azure-native pipeline into a governed lakehouse",
+          tone: "violet",
+          services: [
+            ["Azure Data Factory", "Scheduled and event-driven contract ingestion"],
+            ["Microsoft Fabric / OneLake", "Bronze, silver, gold contract data layers"],
+            ["Azure AI Document Intelligence", "Clause, table and obligation extraction"],
+            ["Microsoft Purview", "Lineage, classification and retention policy"],
+          ],
+        },
+        {
+          name: "AI & Agent Layer",
+          note: "Reasoning, grounding and orchestration",
+          tone: "emerald",
+          services: [
+            ["Azure OpenAI (GPT-4.1)", "Clause reasoning, summarisation, Q&A"],
+            ["Azure AI Search", "Vector + hybrid retrieval for grounded answers"],
+            ["Azure AI Foundry Agent Service", "Tools, planning and evaluation"],
+            ["Semantic Kernel", "Multi-step obligation and renewal workflows"],
+          ],
+        },
+        {
+          name: "Action & Experience",
+          note: "Where legal, procurement and finance consume the output",
+          tone: "amber",
+          services: [
+            ["Microsoft Teams & Copilot", "Agent answers in the flow of work"],
+            ["Power Automate", "Approvals, renewal tasks, escalation workflows"],
+            ["Power BI", "Exposure, renewal and compliance dashboards"],
+            ["Outlook & Planner", "Owner assignment and executive notices"],
+          ],
+        },
+        {
+          name: "Security & Governance",
+          note: "Enterprise controls across every layer",
+          tone: "rose",
+          services: [
+            ["Microsoft Entra ID", "SSO, conditional access, least privilege"],
+            ["Azure Key Vault", "Secrets, keys and managed identities"],
+            ["Microsoft Defender for Cloud", "Threat protection and posture management"],
+            ["Azure Monitor & Content Safety", "Audit trail, telemetry, responsible AI"],
+          ],
+        },
+      ];
+
+      const walkthroughLayers = [
+        {
+          title: "Start where the contracts already live",
+          tone: "cyan",
+          script:
+            "Nothing gets migrated to a new platform. The agent reads from SharePoint, the ERP supplier master and ServiceNow SLA records, so day one coverage is the estate you already have.",
+          services: ["SharePoint", "Dynamics 365 / SAP", "ServiceNow", "Blob Storage"],
+        },
+        {
+          title: "Turn documents into structured obligations",
+          tone: "violet",
+          script:
+            "Data Factory pipelines land contracts in OneLake, and Azure AI Document Intelligence extracts clauses, dates, spend commitments and SLA terms into a governed model with Purview lineage.",
+          services: ["Azure Data Factory", "Microsoft Fabric / OneLake", "Document Intelligence", "Purview"],
+        },
+        {
+          title: "Ground the agent so answers are defensible",
+          tone: "emerald",
+          script:
+            "Azure AI Search provides hybrid retrieval and Azure OpenAI reasons only over retrieved clauses. Every answer cites the contract and section, which is what makes legal comfortable relying on it.",
+          services: ["Azure OpenAI", "Azure AI Search", "AI Foundry Agent Service", "Semantic Kernel"],
+        },
+        {
+          title: "Deliver action, not another dashboard",
+          tone: "amber",
+          script:
+            "Findings become Power Automate approvals, Planner tasks with named owners, Teams and Copilot answers in the flow of work, and a Power BI exposure view for the CFO.",
+          services: ["Teams & Copilot", "Power Automate", "Power BI", "Outlook & Planner"],
+        },
+        {
+          title: "Enterprise-grade by default",
+          tone: "rose",
+          script:
+            "Entra ID enforces who sees which agreement, Key Vault holds secrets with managed identities, Defender for Cloud covers posture, and Azure Monitor plus Content Safety give a full audit trail for responsible AI.",
+          services: ["Entra ID", "Key Vault", "Defender for Cloud", "Azure Monitor"],
+        },
+      ];
+
+      const executiveSteps = [
+        "Telcos manage thousands of contracts across network, devices, cloud, construction, media, wholesale, and technology suppliers.",
+        "Legal risk is hidden in renewals, SLAs, data clauses, committed spend, penalties, and missed obligations.",
+        "Contracts Copilot converts legal obligations into executive actions.",
+        "The agent identifies exposure, legal risk, renewal urgency, accountable owners, and next steps.",
+        "The value is making legal a proactive control layer, not a reactive review function.",
+      ];
+
+      const exposureAreas = [
+        { name: "Cloud", value: 27 },
+        { name: "Tower", value: 18 },
+        { name: "Fiber", value: 9.4 },
+        { name: "Software", value: 4.8 },
+        { name: "Privacy", value: 2.1 },
+      ];
+
+      const riskSources = [
+        { name: "Renewal risk", value: 34, color: "#38bdf8" },
+        { name: "Spend commitment", value: 29, color: "#a78bfa" },
+        { name: "SLA exposure", value: 18, color: "#34d399" },
+        { name: "Missing clauses", value: 12, color: "#fbbf24" },
+        { name: "Other", value: 7, color: "#fb7185" },
+      ];
+
+      const state = {
+        page: "Dashboard",
+        planApproved: false,
+        question: "",
+        answer:
+          "Ask Contracts Copilot about obligations, renewals, exposure, or negotiation opportunities.",
+        toastTimer: 0,
+      };
+
+      const iconPaths = {
+        dashboard:
+          '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/>',
+        risk:
+          '<path d="M12 3 2.8 19a1.3 1.3 0 0 0 1.1 2h16.2a1.3 1.3 0 0 0 1.1-2L12 3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+        investigation:
+          '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/><path d="M8.5 11h5M11 8.5v5"/>',
+        action:
+          '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+        impact:
+          '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+        architecture:
+          '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/><path d="M6.5 10v2h11v-2M12 12v2"/>',
+        console:
+          '<path d="m4 17 6-6-6-6"/><path d="M12 19h8"/>',
+        walkthrough:
+          '<circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4V8Z"/>',
+        check:
+          '<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>',
+        arrow:
+          '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
+        sparkles:
+          '<path d="m12 3-1.3 5.7L5 10l5.7 1.3L12 17l1.3-5.7L19 10l-5.7-1.3L12 3Z"/><path d="m19 15-.7 2.3L16 18l2.3.7L19 21l.7-2.3L22 18l-2.3-.7L19 15Z"/>',
+        shield:
+          '<path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/>',
+      };
+
+      function icon(name, size = 18) {
+        return `<svg aria-hidden="true" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${iconPaths[name] || ""}</svg>`;
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (character) => {
+          const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          };
+          return entities[character];
+        });
+      }
+
+      function navIcon(section) {
+        const names = {
+          Dashboard: "dashboard",
+          "Risk Radar": "risk",
+          Investigation: "investigation",
+          "Agent Team": "architecture",
+          "Action Plan": "action",
+          "Impact View": "impact",
+          Architecture: "architecture",
+          "Command Console": "console",
+          "Executive Walkthrough": "walkthrough",
+        };
+        return names[section];
+      }
+
+      function renderNavigation() {
+        const desktop = document.getElementById("desktop-navigation");
+        const mobile = document.getElementById("mobile-page");
+        desktop.innerHTML = sections
+          .map(
+            (section) => `
+              <button class="nav-button" type="button" data-page="${section}" aria-current="${state.page === section ? "page" : "false"}">
+                <span class="nav-icon">${icon(navIcon(section), 17)}</span>
+                <span>${section}</span>
+              </button>`,
+          )
+          .join("");
+        mobile.innerHTML = sections
+          .map(
+            (section) =>
+              `<option value="${section}"${state.page === section ? " selected" : ""}>${section}</option>`,
+          )
+          .join("");
+      }
+
+      function pageHeader(title, subtitle) {
+        return `
+          <header class="page-header">
+            <div class="badges">
+              <span class="badge badge-agent">${icon("sparkles", 13)}Contracts Copilot</span>
+              <span class="badge badge-demo">${icon("shield", 13)}Sample data · simulated agents</span>
+              <span class="badge badge-review">Human legal review</span>
+            </div>
+            <h1>${title}</h1>
+            <p class="page-subtitle">${subtitle}</p>
+          </header>`;
+      }
+
+      function renderDashboard() {
+        const metrics = [
+          ["48,200", "Active contracts monitored"],
+          ["$12.3B", "Contract value under intelligence"],
+          ["1,842", "Upcoming obligations"],
+          ["318", "Renewal risks"],
+          ["$87M", "Negotiation opportunity"],
+          ["97%", "Obligation compliance score"],
+        ];
+        return `
+          ${pageHeader(
+            "Contracts Copilot",
+            "A coordinated legal AI workflow for telco obligations, renewal windows, SLAs, data clauses, supplier commitments, and commercial risk—grounded in contract evidence and reviewed by people.",
+          )}
+          <section class="metric-grid" aria-label="Portfolio metrics">
+            ${metrics
+              .map(
+                ([value, label]) => `
+                  <article class="metric-card">
+                    <div class="metric-value">${value}</div>
+                    <div class="metric-label">${label}</div>
+                  </article>`,
+              )
+              .join("")}
+          </section>
+          <section class="dashboard-grid">
+            <article class="panel">
+              <h2>Agent Executive Summary</h2>
+              <p class="panel-copy">The agent analyzed tower agreements, cloud contracts, fiber construction agreements, software licenses, data processing terms, procurement agreements, and commercial obligations. It prioritized risks by financial exposure, legal urgency, renewal timing, confidence, and recommended action.</p>
+              <div class="risk-summary-grid">
+                ${risks
+                  .slice(0, 3)
+                  .map(
+                    (risk) => `
+                      <div class="risk-summary">
+                        <div class="severity-label">${risk.severity} risk</div>
+                        <strong>${risk.title}</strong>
+                        <span class="exposure">${risk.exposure}</span>
+                      </div>`,
+                  )
+                  .join("")}
+              </div>
+            </article>
+            <aside class="panel">
+              <h3>Autonomous Recommendations</h3>
+              <ul class="recommendations">
+                ${recommendations
+                  .map(
+                    (item) =>
+                      `<li>${icon("check", 17)}<span>${item}</span></li>`,
+                  )
+                  .join("")}
+              </ul>
+              <button class="primary-button full-width" type="button" data-page="Risk Radar">
+                Review risk radar ${icon("arrow", 16)}
+              </button>
+            </aside>
+          </section>
+          <section class="panel agent-team-intro" style="margin-top:17px">
+            <div>
+              <h2>Meet the Contracts Copilot agent team</h2>
+              <p>One coordinating Copilot works with five defined specialists. Each hands off cited evidence or draft recommendations; legal and business owners remain accountable for approvals.</p>
+            </div>
+            <button class="secondary-button" type="button" data-page="Agent Team">Explore agent roles ${icon("arrow", 16)}</button>
+          </section>`;
+      }
+
+      function renderRiskRadar() {
+        return `
+          ${pageHeader(
+            "Contract Risk Radar",
+            "Ranked view of contractual exposure, renewal urgency, confidence, and recommended action.",
+          )}
+          <section class="panel table-wrap">
+            <table class="risk-table">
+              <thead>
+                <tr>
+                  <th scope="col">Risk</th>
+                  <th scope="col">Exposure</th>
+                  <th scope="col">Confidence</th>
+                  <th scope="col">Severity</th>
+                  <th scope="col">Recommended action</th>
+                  <th scope="col"><span class="visually-hidden">Open investigation</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                ${risks
+                  .map(
+                    (risk) => `
+                      <tr>
+                        <td><strong>${risk.title}</strong></td>
+                        <td class="exposure-text">${risk.exposure}</td>
+                        <td>${risk.confidence}</td>
+                        <td><span class="severity severity-${risk.severity.toLowerCase()}">${risk.severity}</span></td>
+                        <td class="table-action">${risk.action}</td>
+                        <td><button class="small-button" type="button" data-page="Investigation">Open</button></td>
+                      </tr>`,
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </section>`;
+      }
+
+      function renderInvestigation() {
+        const evidence = [
+          ["Contract term", "Enterprise cloud agreement renews in 120 days"],
+          ["Spend obligation", "$175M annual committed spend requirement"],
+          ["Actual run rate", "$148M projected spend based on usage trend"],
+          ["Commercial gap", "$27M commitment shortfall forecast"],
+          ["Negotiation lever", "Three overlapping suppliers with redundant services"],
+          ["Recommendation", "Reallocate workloads or renegotiate minimum commitment"],
+        ];
+        const confidence = [
+          ["Evidence quality", "94%"],
+          ["Risk confidence", "91%"],
+          ["Business impact", "88%"],
+          ["Action readiness", "86%"],
+        ];
+        return `
+          ${pageHeader(
+            "Cloud Commitment Contract Risk",
+            "The agent detected committed spend tracking below obligation while renewal leverage is still available.",
+          )}
+          <section class="evidence-layout">
+            <article class="panel">
+              <h2>Evidence Chain</h2>
+              <ol class="evidence-list">
+                ${evidence
+                  .map(
+                    ([label, detail], index) => `
+                      <li>
+                        <span class="evidence-number">${index + 1}</span>
+                        <span><strong>${label}</strong><span>${detail}</span></span>
+                      </li>`,
+                  )
+                  .join("")}
+              </ol>
+              <button class="primary-button" type="button" data-page="Action Plan" style="margin-top:22px">
+                Generate action plan ${icon("arrow", 16)}
+              </button>
+            </article>
+            <aside class="panel">
+              <h3>Agent Confidence</h3>
+              <div class="confidence-list">
+                ${confidence
+                  .map(
+                    ([label, value]) => `
+                      <div class="confidence-item">
+                        <div class="confidence-heading"><span>${label}</span><strong>${value}</strong></div>
+                        <div class="progress-track"><div class="progress-fill" style="width:${value}"></div></div>
+                      </div>`,
+                  )
+                  .join("")}
+              </div>
+            </aside>
+          </section>`;
+      }
+
+      function renderAgentTeam() {
+        const roles = [
+          {
+            name: "Contracts Copilot",
+            role: "ORCHESTRATOR · USER-FACING",
+            purpose:
+              "Routes a question to the right specialists, coordinates their handoffs, and assembles a single answer with evidence, uncertainty, and next steps.",
+            inputs: "User questions plus outputs from the specialist agents.",
+            outputs: "A coordinated, traceable response or a draft action package.",
+            limits:
+              "Does not make legal decisions, approve a plan, send supplier communications, or commit spend.",
+          },
+          ...specialistAgents.map((agent) => ({
+            ...agent,
+            role: `SPECIALIST · ${agent.role.toUpperCase()}`,
+          })),
+        ];
+        const flow = [
+          ["Contracts & records", "agent-flow-step"],
+          ["Clause Extraction Agent", "agent-flow-step"],
+          ["Obligation + Risk Agents (parallel)", "agent-flow-step"],
+          ["Negotiation Agent", "agent-flow-step"],
+          ["Contracts Copilot", "agent-flow-step orchestrator"],
+          ["Workflow Agent · draft plan", "agent-flow-step"],
+          ["Human Approval", "agent-flow-step"],
+        ];
+        return `
+          ${pageHeader(
+            "Contracts Copilot Agent Team",
+            "A coordinated team of AI roles—not one opaque agent. Each specialist has a defined job, explicit handoffs, and a human approval boundary.",
+          )}
+          <section class="panel agent-team-intro" style="margin-bottom:17px">
+            <div>
+              <h2>How the agents work together</h2>
+              <p>The extraction agent establishes clause evidence first. Obligation and risk specialists analyze that evidence in parallel; negotiation scenarios use reviewed findings; the Copilot assembles the answer; and the workflow agent prepares drafts for human approval.</p>
+            </div>
+            <span class="demo-label">${icon("shield", 14)}Demo roles · sample data</span>
+          </section>
+          <section class="panel agent-flow" aria-label="Agent handoff sequence">
+            ${flow
+              .map(
+                ([label, className], index) =>
+                  `<span class="${className}">${label}</span>${index < flow.length - 1 ? `<span class="flow-arrow" aria-hidden="true">${icon("arrow", 14)}</span>` : ""}`,
+              )
+              .join("")}
+          </section>
+          <section class="agent-team-grid" aria-label="Agent roles and responsibilities" style="margin-top:17px">
+            ${roles
+              .map(
+                (agent, index) => `
+                  <article class="panel agent-card${index === 0 ? " orchestrator" : ""}">
+                    <header class="agent-card-header">
+                      <span class="layer-number ${index === 0 ? "" : ["violet", "cyan", "rose", "amber", "emerald"][index - 1]}">${index === 0 ? icon("sparkles", 18) : index}</span>
+                      <div>
+                        <h${index === 0 ? "2" : "3"}>${agent.name}</h${index === 0 ? "2" : "3"}>
+                        <span class="agent-role">${agent.role}</span>
+                      </div>
+                    </header>
+                    <p class="agent-card-copy">${agent.purpose}</p>
+                    <dl class="agent-details">
+                      <div><dt>Receives</dt><dd>${agent.inputs}</dd></div>
+                      <div><dt>Produces</dt><dd>${agent.outputs}</dd></div>
+                      <div><dt>Guardrail</dt><dd>${agent.limits}</dd></div>
+                    </dl>
+                  </article>`,
+              )
+              .join("")}
+          </section>
+          <section class="panel human-review-panel" style="margin-top:17px">
+            <span class="layer-number emerald">${icon("shield", 18)}</span>
+            <div>
+              <h2>Human legal review is a control—not an AI agent</h2>
+              <p>Legal counsel reviews interpretation and legal positions. Procurement and finance validate commercial assumptions. An accountable human must approve any external notice, supplier communication, spend commitment, or workflow activation. This prototype demonstrates sample responses only; it has no live contract connection or executing agents.</p>
+            </div>
+          </section>`;
+      }
+
+      function renderActionPlan() {
+        const approval = state.planApproved
+          ? `
+              <div class="activated-state">
+                ${icon("check", 37)}
+                <div>
+                  <h2>Demo Plan Approved</h2>
+                  <p>Proposed workflow is ready for owner review. No external action was taken.</p>
+                </div>
+              </div>`
+          : `
+              <div>
+                <h2>Legal review package awaits approval</h2>
+                <p>This demo approval records your review locally; it does not send notices or activate a live workflow.</p>
+              </div>
+              <button class="primary-button" type="button" data-action="approve-plan">
+                Approve Action Plan ${icon("check", 17)}
+              </button>`;
+        return `
+          ${pageHeader(
+            "Agent Action Plan",
+            "The agent turns contract insight into legal, procurement, finance, and executive workflow.",
+          )}
+          <section class="plan-grid">
+            ${actionItems
+              .map(
+                (item, index) => `
+                  <article class="panel plan-card">
+                    <span class="plan-number">${index + 1}</span>
+                    <div>
+                      <h3>${item}</h3>
+                      <p>Proposed owner, supporting evidence, and approval routing for review.</p>
+                    </div>
+                  </article>`,
+              )
+              .join("")}
+          </section>
+          <section class="panel approval-panel" style="margin-top:17px" aria-live="polite">
+            ${approval}
+          </section>`;
+      }
+
+      function renderImpact() {
+        const maxExposure = 30;
+        const totalExposure = exposureAreas
+          .reduce((total, area) => total + area.value, 0)
+          .toFixed(1);
+        return `
+          ${pageHeader(
+            "Contract Impact View",
+            "Executive view of exposure by category and risk source.",
+          )}
+          <section class="impact-grid">
+            <article class="panel">
+              <h2>Exposure by Contract Area</h2>
+              <div class="chart-area" role="img" aria-label="Contract exposure by area, in millions of dollars">
+                <div class="chart-y-axis"><span>$30M</span><span>$20M</span><span>$10M</span><span>$0</span></div>
+                <div class="bar-chart">
+                  ${exposureAreas
+                    .map(
+                      (area) => `
+                        <div class="bar-group">
+                          <span class="bar-value">$${area.value}M</span>
+                          <div class="bar" style="height:${(area.value / maxExposure) * 83}%"></div>
+                          <span class="bar-label">${area.name}</span>
+                        </div>`,
+                    )
+                    .join("")}
+                </div>
+              </div>
+            </article>
+            <article class="panel">
+              <h2>Risk Source Mix</h2>
+              <div class="donut-layout">
+                <div class="donut" role="img" aria-label="Risk sources: renewal risk 34%, spend commitment 29%, SLA exposure 18%, missing clauses 12%, other 7%">
+                  <div class="donut-hole"><strong>100%</strong><span>risk signals</span></div>
+                </div>
+                <ul class="legend">
+                  ${riskSources
+                    .map(
+                      (source) => `
+                        <li>
+                          <span class="legend-dot" style="background:${source.color}"></span>
+                          <span>${source.name}</span>
+                          <strong>${source.value}%</strong>
+                        </li>`,
+                    )
+                    .join("")}
+                </ul>
+              </div>
+              <p class="metric-label" style="margin:0">Exposure represented: $${totalExposure}M</p>
+            </article>
+          </section>`;
+      }
+
+      function renderArchitecture() {
+        return `
+          ${pageHeader(
+            "Contracts Copilot Reference Architecture",
+            "Illustrative architecture for how a Contracts Copilot solution could use Azure and Microsoft 365 to ingest contracts, ground AI responses, coordinate specialist agents, and prepare human-approved actions.",
+          )}
+          <section class="panel architecture-flow" aria-label="Architecture flow">
+            ${["Source systems", "Data platform", "AI agent", "Action", "Governance"]
+              .map(
+                (step, index, all) =>
+                  `<span class="flow-step">${step}</span>${index < all.length - 1 ? `<span class="flow-arrow" aria-hidden="true">${icon("arrow", 14)}</span>` : ""}`,
+              )
+              .join("")}
+          </section>
+          <section class="section-stack">
+            ${architectureLayers
+              .map(
+                (layer, index) => `
+                  <article class="panel architecture-layer">
+                    <div class="layer-header">
+                      <span class="layer-number ${layer.tone === "cyan" ? "" : layer.tone}">${index + 1}</span>
+                      <div><h2>${layer.name}</h2><p>${layer.note}</p></div>
+                    </div>
+                    <div class="service-grid">
+                      ${layer.services
+                        .map(
+                          ([name, description]) => `
+                            <div class="service-card">
+                              <strong>${name}</strong>
+                              <p>${description}</p>
+                            </div>`,
+                        )
+                        .join("")}
+                    </div>
+                  </article>`,
+              )
+              .join("")}
+          </section>
+          <section class="panel gradient-panel why-stack" style="margin-top:17px">
+            <h2>Why this stack</h2>
+            <p class="panel-copy">Contracts never leave the Microsoft tenant. Data stays governed in OneLake with Purview lineage, answers are grounded in Azure AI Search so every response is traceable to a clause, and Entra ID enforces who can see which agreement.</p>
+            <button class="primary-button" type="button" data-page="Executive Walkthrough" style="margin-top:18px">
+              Walk through the architecture ${icon("arrow", 16)}
+            </button>
+          </section>`;
+      }
+
+      function renderConsole() {
+        const suggestions = [
+          "Which contracts need action this quarter?",
+          "Where is our largest negotiation opportunity?",
+          "What obligations are at risk?",
+        ];
+        return `
+          ${pageHeader(
+            "Contract AI Command Console",
+            "Ask Contracts Copilot legal and commercial questions in plain language.",
+          )}
+          <section class="panel">
+            <form class="console-input-row" id="question-form">
+              <input class="console-input" id="question-input" type="text" autocomplete="off" placeholder="Ask a contract question..." aria-label="Ask a contract question" value="${escapeHtml(state.question)}" />
+              <button class="primary-button" type="submit">Ask Contracts Copilot ${icon("arrow", 16)}</button>
+            </form>
+            <div class="agent-response" aria-live="polite">
+              <div class="response-label">${icon("sparkles", 14)}Agent Response</div>
+              <p id="agent-answer">${state.answer}</p>
+            </div>
+            <div class="prompt-grid">
+              ${suggestions
+                .map(
+                  (suggestion) =>
+                    `<button class="prompt-button" type="button" data-question="${suggestion}">${suggestion}</button>`,
+                )
+                .join("")}
+            </div>
+          </section>`;
+      }
+
+      function renderWalkthrough() {
+        return `
+          ${pageHeader(
+            "Executive Walkthrough",
+            "Boardroom talk track for legal, procurement, CFO, and business executives.",
+          )}
+          <section class="walkthrough-grid">
+            ${executiveSteps
+              .map(
+                (step, index) => `
+                  <article class="panel walkthrough-card">
+                    <div class="step-label">Step ${index + 1}</div>
+                    <p>${step}</p>
+                  </article>`,
+              )
+              .join("")}
+          </section>
+          <section class="walkthrough-architecture">
+            <h2>Architecture Walkthrough</h2>
+            <p>How to narrate the Microsoft architecture to a technical or executive audience.</p>
+            <div class="section-stack">
+              ${walkthroughLayers
+                .map(
+                  (layer, index) => `
+                    <article class="panel walkthrough-layer">
+                      <span class="layer-number ${layer.tone === "cyan" ? "" : layer.tone}">${index + 1}</span>
+                      <div>
+                        <h3>${layer.title}</h3>
+                        <p>${layer.script}</p>
+                        <div class="service-tags">
+                          ${layer.services.map((service) => `<span class="service-tag">${service}</span>`).join("")}
+                        </div>
+                      </div>
+                    </article>`,
+                )
+                .join("")}
+            </div>
+          </section>
+          <section class="panel approval-panel" style="margin-top:17px">
+            <p class="panel-copy" style="margin:0">Want the full service-by-service view of the Azure and Microsoft 365 stack?</p>
+            <button class="secondary-button" type="button" data-page="Architecture">Open architecture ${icon("arrow", 15)}</button>
+          </section>
+          <section class="panel gradient-panel" style="margin-top:17px">
+            <h2>Executive Message</h2>
+            <p class="panel-copy" style="font-size:16px">Contracts Copilot turns contracts from static documents into active business controls that protect value, reduce risk, and improve negotiation leverage—with specialists doing defined work and people retaining decision authority.</p>
+            <button class="primary-button" type="button" data-page="Command Console" style="margin-top:17px">Open command console ${icon("arrow", 16)}</button>
+          </section>`;
+      }
+
+      function answerQuestion(question) {
+        const normalized = question.toLowerCase();
+        if (
+          normalized.includes("largest") ||
+          normalized.includes("negotiation") ||
+          normalized.includes("opportunity")
+        ) {
+          return "Largest negotiation opportunity is cloud vendor optimization. The agent identified a $27M commitment gap and overlapping supplier services that could support renegotiation or workload reallocation.";
+        }
+        if (normalized.includes("obligation") || normalized.includes("risk")) {
+          return "Highest obligation risk is the cloud spend commitment gap. Current run rate is $148M against a $175M annual commitment, creating a projected $27M shortfall.";
+        }
+        if (normalized.includes("quarter") || normalized.includes("renewal")) {
+          return "318 contracts require action within the next 90 days. Highest priority items are cloud commitment, tower lease renewals, and fiber construction SLA exposure.";
+        }
+        return "Contracts Copilot recommends prioritizing the cloud commitment gap, tower lease renewals, and fiber construction SLA remediation because they have the highest near-term legal and financial exposure.";
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.innerHTML = `${icon("check", 17)}<span>${message}</span>`;
+        toast.classList.add("visible");
+        window.clearTimeout(state.toastTimer);
+        state.toastTimer = window.setTimeout(
+          () => toast.classList.remove("visible"),
+          3200,
+        );
+      }
+
+      function renderPage() {
+        const pages = {
+          Dashboard: renderDashboard,
+          "Risk Radar": renderRiskRadar,
+          Investigation: renderInvestigation,
+          "Agent Team": renderAgentTeam,
+          "Action Plan": renderActionPlan,
+          "Impact View": renderImpact,
+          Architecture: renderArchitecture,
+          "Command Console": renderConsole,
+          "Executive Walkthrough": renderWalkthrough,
+        };
+        document.getElementById("page-content").innerHTML = pages[state.page]();
+        renderNavigation();
+        if (state.page === "Command Console") {
+          const input = document.getElementById("question-input");
+          input.addEventListener("input", () => {
+            state.question = input.value;
+          });
+        }
+      }
+
+      function navigateTo(page) {
+        if (!sections.includes(page)) return;
+        state.page = page;
+        renderPage();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      document.addEventListener("click", (event) => {
+        const pageButton = event.target.closest("[data-page]");
+        if (pageButton) {
+          navigateTo(pageButton.dataset.page);
+          return;
+        }
+
+        const questionButton = event.target.closest("[data-question]");
+        if (questionButton) {
+          state.question = questionButton.dataset.question;
+          state.answer = answerQuestion(state.question);
+          renderPage();
+          return;
+        }
+
+        const actionButton = event.target.closest("[data-action]");
+        if (actionButton?.dataset.action === "approve-plan") {
+          state.planApproved = true;
+          renderPage();
+          showToast("Demo approval recorded. No external actions were sent.");
+        }
+      });
+
+      document.addEventListener("submit", (event) => {
+        if (event.target.id !== "question-form") return;
+        event.preventDefault();
+        const question = state.question.trim();
+        if (!question) {
+          document.getElementById("question-input").focus();
+          return;
+        }
+        state.answer = answerQuestion(question);
+        renderPage();
+      });
+
+      document.getElementById("mobile-page").addEventListener("change", (event) => {
+        navigateTo(event.target.value);
+      });
+
+      renderPage();
+    </script>
+  </body>
+</html>
